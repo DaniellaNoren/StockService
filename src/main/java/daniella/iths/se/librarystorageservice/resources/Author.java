@@ -9,7 +9,7 @@ import java.util.Set;
 public class Author {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private long author_id;
     private String firstName;
     private String lastName;
@@ -23,6 +23,7 @@ public class Author {
     public Author(){
 
     }
+
     @JsonIgnore
     public Set<Book> getBooks() {
         return books;

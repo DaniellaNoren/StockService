@@ -18,6 +18,7 @@ public class BookController {
 
     @GetMapping()
     public ListOfObject<Book> getAllBooks(){
+        System.out.println("all books: "+bookService.getAllBooks().toString());
         return bookService.getAllBooks();
     }
 

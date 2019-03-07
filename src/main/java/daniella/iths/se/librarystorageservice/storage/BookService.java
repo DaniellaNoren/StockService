@@ -30,7 +30,7 @@ public class BookService {
     public ListOfObject<Book> getAllBooks(){
         List<Book> listOfBooks = new ArrayList<>();
         ListOfObject<Book> list = new ListOfObject<>();
-        bookRepository.findAll().forEach(book -> listOfBooks.add(book));
+        bookRepository.findAll().forEach(book -> { listOfBooks.add(book); book.getAuthors().forEach(e -> System.out.println(e.getFirstName()));});
         list.setBookList(listOfBooks);
         return list;
     }
