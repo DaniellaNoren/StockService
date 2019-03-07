@@ -1,27 +1,42 @@
 package daniella.iths.se.librarystorageservice.resources;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import javax.persistence.*;
+import java.util.Set;
 
+@Entity
 public class Author {
 
-    private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long author_id;
     private String firstName;
     private String lastName;
-    private ListOfObject<Book> books;
+
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "authors")
+    private Set<Book> books;
+
+
 
     public Author(){
 
     }
-
-    public long getId() {
-        return id;
+    @JsonIgnore
+    public Set<Book> getBooks() {
+        return books;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public void setBooks(Set<Book> books) {
+        this.books = books;
+    }
+    public long getAuthor_id() {
+        return author_id;
+    }
+
+    public void setAuthor_id(long author_id) {
+        this.author_id = author_id;
     }
 
     public String getFirstName() {
@@ -40,11 +55,4 @@ public class Author {
         this.lastName = lastName;
     }
 
-    public ListOfObject<Book> getBooks() {
-        return books;
-    }
-
-    public void setBooks(ListOfObject<Book> books) {
-        this.books = books;
-    }
 }

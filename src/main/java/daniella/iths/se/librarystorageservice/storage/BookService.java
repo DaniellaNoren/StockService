@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,15 +35,25 @@ public class BookService {
         return list;
     }
 
-    @Transactional
     public void addBook(Book b){
+        b.setLastUpdatedAt(new Date());
         bookRepository.saveAndFlush(b);
 
     }
 
+    public void deleteBook(long id){
+        bookRepository.deleteById(id);
+    }
+
+    public void updateBookTitle(long id, String title){
+        Book b = bookRepository.findById(id).get();
+        b.setTitle(title);
+        b.setLastUpdatedAt(new Date());
+        bookRepository.saveAndFlush(b);
+    }
 
 
-
-
-
+    public void deleteAll() {
+        bookRepository.deleteAll();
+    }
 }
