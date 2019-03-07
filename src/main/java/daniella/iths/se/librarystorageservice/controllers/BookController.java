@@ -1,35 +1,37 @@
 package daniella.iths.se.librarystorageservice.controllers;
 
 import daniella.iths.se.librarystorageservice.resources.Book;
+import daniella.iths.se.librarystorageservice.resources.ListOfObject;
+import daniella.iths.se.librarystorageservice.storage.BookService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/books")
 public class BookController {
 
+    @Autowired
+    private BookService bookService;
+
     @GetMapping()
-    public List<Book> getAllBooks(){
-        //return all books
-        return null;
+    public ListOfObject<Book> getAllBooks(){
+        return bookService.getAllBooks();
     }
 
     @GetMapping("/{id}")
-    public Book getOneBook(){
-        //return one book based on id
-        return null;
+    public Book getOneBook(@PathVariable("id")long id){
+        return bookService.getBookById(id);
     }
 
-    @GetMapping("/{title}")
-    public List<Book> getAllBooksBasedOnTitle(){
-        //return books with matching title
-        return null;
-    }
+//    @GetMapping("/{title}")
+//    public ListOfObject<Book> getAllBooksBasedOnTitle(@PathVariable String title){
+//        //return books with matching title
+//        return null;
+//    }
 
     @PostMapping()
-    public void addBook(){
-        //add a book
+    public void addBook(@RequestBody Book book){
+        bookService.addBook(book);
     }
 
     @DeleteMapping("/{id}")

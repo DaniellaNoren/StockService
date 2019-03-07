@@ -1,13 +1,16 @@
 package daniella.iths.se.librarystorageservice.resources;
 
-import java.util.Set;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+
 
 public class Author {
 
     private long id;
     private String firstName;
     private String lastName;
-    private Set<Book> books;
+    private ListOfObject<Book> books;
 
     public Author(){
 
@@ -37,11 +40,11 @@ public class Author {
         this.lastName = lastName;
     }
 
-    public Set<Book> getBooks() {
+    public ListOfObject<Book> getBooks() {
         return books;
     }
 
-    public void setBooks(Set<Book> books) {
+    public void setBooks(ListOfObject<Book> books) {
         this.books = books;
     }
 }
