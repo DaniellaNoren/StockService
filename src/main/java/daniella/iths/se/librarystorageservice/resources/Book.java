@@ -1,6 +1,8 @@
 package daniella.iths.se.librarystorageservice.resources;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -22,11 +24,12 @@ public class Book {
     private String lastUpdatedAt;
 
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {CascadeType.ALL})
     @JoinTable(
             name = "books_authors",
             joinColumns = @JoinColumn(name = "id"),
             inverseJoinColumns = @JoinColumn(name = "author_id"))
+    @JsonManagedReference
     private Set<Author> authors;
 
 //    @Temporal(TemporalType.TIMESTAMP)
@@ -85,8 +88,8 @@ public class Book {
         return authors;
     }
 
-    public void setAuthors(Set<Author> authors) {
-        this.authors = authors;
+    public void addAuthor (Author author) {
+        authors.add(author);
     }
 
     //    public ListOfObject<Author> getAuthors() {
@@ -96,4 +99,16 @@ public class Book {
 //    public void setAuthors(ListOfObject<Author> authors) {
 //        this.authors = authors;
 //    }
+
+
+    @Override
+    public String toString() {
+        return "Book{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", postedAt='" + postedAt + '\'' +
+                ", lastUpdatedAt='" + lastUpdatedAt + '\'' +
+                ", authors=" +
+                '}';
+    }
 }

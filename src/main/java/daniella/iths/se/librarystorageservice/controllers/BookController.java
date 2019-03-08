@@ -1,8 +1,10 @@
 package daniella.iths.se.librarystorageservice.controllers;
 
+
+import daniella.iths.se.librarystorageservice.resources.Author;
 import daniella.iths.se.librarystorageservice.resources.Book;
 import daniella.iths.se.librarystorageservice.resources.ListOfObject;
-import daniella.iths.se.librarystorageservice.storage.AuthorRepository;
+import daniella.iths.se.librarystorageservice.storage.AuthorService;
 import daniella.iths.se.librarystorageservice.storage.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -13,12 +15,13 @@ public class BookController {
 
     @Autowired
     private BookService bookService;
+
     @Autowired
-    private AuthorRepository authorRepository;
+    private AuthorService authorService;
+
 
     @GetMapping()
     public ListOfObject<Book> getAllBooks(){
-        System.out.println("all books: "+bookService.getAllBooks().toString());
         return bookService.getAllBooks();
     }
 
@@ -37,9 +40,29 @@ public class BookController {
 
     @PostMapping()
     public void addBook(@RequestBody Book book){
+//        book.getAuthors().forEach(author -> {
+//            Author a = au.findById(author.getAuthor_id()).get();
+//            System.out.println(a);
+//            if(a != null) {
+//                author.setFirstName(a.getFirstName());
+//                author.setLastName(a.getLastName());
+//                a.getBooks().add(book);
+//            }else
+//                throw new BookNotFoundException("author not found");
+//                });
+//        book.getAuthors().forEach(System.out::println);
+
         bookService.addBook(book);
-        if(book.getAuthors() != null)
-        book.getAuthors().forEach(author -> authorRepository.save(author));
+
+
+    }
+
+    @PutMapping("/{id}/author")
+    public void addAuthor(@RequestBody Author author, @PathVariable long id){
+        Author a = authorService.getAuthorById(author.getAuthor_id());
+        if(a != null)
+            bookService.addAuthor(a, id);
+
 
     }
 

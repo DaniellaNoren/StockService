@@ -4,17 +4,17 @@ import java.util.List;
 
 public class ListOfObject<T> {
 
-    private List<T> bookList;
+    private List<T> listOfObjects;
 
     public ListOfObject(){
 
     }
 
     public List<T> getBookList() {
-        return bookList;
+        return listOfObjects;
     }
 
-    public void setBookList(List<T> bookList) {
-        this.bookList = bookList;
+        public void setBookList(List<T> listOfObject) {
+        this.listOfObjects = listOfObject;
     }
 }

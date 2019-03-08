@@ -1,6 +1,7 @@
 package daniella.iths.se.librarystorageservice.storage;
 
 import daniella.iths.se.librarystorageservice.exceptions.BookNotFoundException;
+import daniella.iths.se.librarystorageservice.resources.Author;
 import daniella.iths.se.librarystorageservice.resources.Book;
 import daniella.iths.se.librarystorageservice.resources.ListOfObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,8 @@ import java.util.Optional;
 public class BookService {
 
 
-
+    @Autowired
+    private AuthorRepository authorRepository;
     @Autowired
     private BookRepository bookRepository;
 
@@ -55,5 +57,22 @@ public class BookService {
 
     public void deleteAll() {
         bookRepository.deleteAll();
+    }
+
+    public void addAuthor(Author author, long id) {
+
+        //System.out.println(author);
+
+        Book b = bookRepository.findById(id).get();
+        if(b != null) {
+            author.addBook(b);
+            b.addAuthor(author);
+            bookRepository.save(b);
+            authorRepository.save(author);
+            System.out.println(b);
+            System.out.println(author);
+        }
+
+
     }
 }
