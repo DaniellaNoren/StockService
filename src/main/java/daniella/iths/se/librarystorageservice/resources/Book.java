@@ -2,6 +2,7 @@ package daniella.iths.se.librarystorageservice.resources;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
@@ -19,17 +20,17 @@ public class Book {
     private String title;
 
     //@Temporal(TemporalType.TIMESTAMP)
-    private String postedAt = new Date().toString();
+    private final String postedAt = new Date().toString();
 
     private String lastUpdatedAt;
 
-
-    @ManyToMany(cascade = {CascadeType.ALL})
+    @JsonIgnoreProperties("books")
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinTable(
             name = "books_authors",
             joinColumns = @JoinColumn(name = "id"),
-            inverseJoinColumns = @JoinColumn(name = "author_id"))
-    @JsonManagedReference
+            inverseJoinColumns = @JoinColumn(name = "author_id")
+            )
     private Set<Author> authors;
 
 //    @Temporal(TemporalType.TIMESTAMP)
@@ -67,6 +68,9 @@ public class Book {
     public Book(){
 
     }
+    public Book(String title){
+        this.title = title;
+    }
 
     public long getId() {
         return id;
@@ -88,9 +92,18 @@ public class Book {
         return authors;
     }
 
+
     public void addAuthor (Author author) {
         authors.add(author);
+//        author.getBooks().add(this);
     }
+
+//    public void removeAuthor(Author author){
+//        authors.remove(author);
+//        //author.getBooks().remove(this);
+//    }
+
+
 
     //    public ListOfObject<Author> getAuthors() {
 //        return authors;
@@ -108,7 +121,11 @@ public class Book {
                 ", title='" + title + '\'' +
                 ", postedAt='" + postedAt + '\'' +
                 ", lastUpdatedAt='" + lastUpdatedAt + '\'' +
-                ", authors=" +
+                ", authors=" + authors +
                 '}';
+    }
+
+    public void removeAuthor(Author author) {
+        authors.remove(author);
     }
 }

@@ -4,10 +4,14 @@ package daniella.iths.se.librarystorageservice.controllers;
 import daniella.iths.se.librarystorageservice.resources.Author;
 import daniella.iths.se.librarystorageservice.resources.Book;
 import daniella.iths.se.librarystorageservice.resources.ListOfObject;
-import daniella.iths.se.librarystorageservice.storage.AuthorService;
 import daniella.iths.se.librarystorageservice.storage.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/books")
@@ -16,69 +20,91 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
-    @Autowired
-    private AuthorService authorService;
-
-
     @GetMapping()
-    public ListOfObject<Book> getAllBooks(){
-        return bookService.getAllBooks();
+    public ResponseEntity<ListOfObject<Book>> getAllBooks(){
+        ListOfObject<Book> listOfObject = bookService.getAllBooks();
+        return new ResponseEntity(listOfObject, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public Book getOneBook(@PathVariable("id")long id){
-        return bookService.getBookById(id);
+    public ResponseEntity<?> getOneBook(@PathVariable("id")long id){
+        Optional<Book> book = bookService.getBookById(id);
+        if(book.isPresent())
+            return new ResponseEntity(bookService.getBookById(id).get(), HttpStatus.OK);
+        return new ResponseEntity("didn't find no darn bookin", HttpStatus.NOT_FOUND);
+
     }
-
-
-
-//    @GetMapping("/{title}")
-//    public ListOfObject<Book> getAllBooksBasedOnTitle(@PathVariable String title){
-//        //return books with matching title
-//        return null;
-//    }
 
     @PostMapping()
     public void addBook(@RequestBody Book book){
-//        book.getAuthors().forEach(author -> {
-//            Author a = au.findById(author.getAuthor_id()).get();
-//            System.out.println(a);
-//            if(a != null) {
-//                author.setFirstName(a.getFirstName());
-//                author.setLastName(a.getLastName());
-//                a.getBooks().add(book);
-//            }else
-//                throw new BookNotFoundException("author not found");
-//                });
-//        book.getAuthors().forEach(System.out::println);
-
         bookService.addBook(book);
-
-
     }
 
-    @PutMapping("/{id}/author")
-    public void addAuthor(@RequestBody Author author, @PathVariable long id){
-        Author a = authorService.getAuthorById(author.getAuthor_id());
-        if(a != null)
-            bookService.addAuthor(a, id);
-
-
+    @PutMapping("/update/{id}/author")
+    public ResponseEntity<?> updateAuthorName(@RequestBody Author author, @PathVariable long id){
+        if(bookService.getBookById(id).isPresent()) {
+            bookService.updateAuthorName(id, author);
+            return new ResponseEntity(bookService.getBookById(id).get(), HttpStatus.OK);
+        }
+        return new ResponseEntity("where the book at???? not here", HttpStatus.NOT_FOUND);
     }
 
     @PutMapping("update/{id}")
-    public void updateBook(@PathVariable long id, @RequestBody Book book){
-        bookService.updateBookTitle(id, book.getTitle());
+    public ResponseEntity<?> updateBookTitle(@PathVariable long id, @RequestBody Book book){
+        Optional<Book> b = bookService.getBookById(id);
+        if(b.isPresent()) {
+            Book bok = b.get();
+            bok.setLastUpdatedAt(new Date());
+            bok.setTitle(book.getTitle());
+            bookService.addBook(book);
+            return new ResponseEntity<>(bookService.getBookById(id).get(), HttpStatus.OK);
+        }
+        else
+            return new ResponseEntity("we no found no book :(", HttpStatus.NOT_FOUND);
+
     }
 
-    @DeleteMapping("delete/{id}")
-    public void deleteBook(@PathVariable long id){
-        bookService.deleteBook(id);
+    @PutMapping("update/{id}/author/{author_id}")
+    public ResponseEntity<?> updateAuthors(@PathVariable long id, @PathVariable long author_id, @RequestBody Author... authors){
+        return new ResponseEntity("fix this shit later ok", HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS);
     }
 
     @DeleteMapping("/delete")
     public void deleteAll(){
         bookService.deleteAll();
     }
+    @DeleteMapping("delete/{id}")
+    public void deleteBook(@PathVariable long id){
+        bookService.deleteBook(id);
+    }
+
+
+    @GetMapping("/authors")
+    public ResponseEntity<ListOfObject<Author>> getAllAuthors(){
+        return new ResponseEntity(bookService.getAuthors(), HttpStatus.OK);
+    }
+
+    @GetMapping("/authors/{id}")
+    public ResponseEntity<?> getAuthorById(@PathVariable long id){
+        Optional<Author> aut = bookService.getAuthorById(id);
+        if(aut.isPresent()){
+            return new ResponseEntity(aut.get(), HttpStatus.OK);
+        }
+        return new ResponseEntity("no author here bitch", HttpStatus.NOT_FOUND);
+    }
+
+    @DeleteMapping("/authors/delete/{id}")
+    public void deleteAuthor(@PathVariable long id){
+        bookService.deleteAuthor(id);
+    }
+
+
+//
+//    @DeleteMapping("/authors/delete")
+//    public void deleteAllAuthors(){
+//        bookService.deleteAllAuthors();
+//    }
+
+
 
 }

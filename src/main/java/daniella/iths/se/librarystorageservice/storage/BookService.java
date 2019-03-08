@@ -1,13 +1,11 @@
 package daniella.iths.se.librarystorageservice.storage;
 
-import daniella.iths.se.librarystorageservice.exceptions.BookNotFoundException;
 import daniella.iths.se.librarystorageservice.resources.Author;
 import daniella.iths.se.librarystorageservice.resources.Book;
 import daniella.iths.se.librarystorageservice.resources.ListOfObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,11 +20,8 @@ public class BookService {
     @Autowired
     private BookRepository bookRepository;
 
-    public Book getBookById(long id){
-        Optional<Book> op = bookRepository.findById(id);
-        if(!op.isPresent())
-            throw new BookNotFoundException("No book with that Id exists");
-        return op.get();
+    public Optional<Book> getBookById(long id){
+        return bookRepository.findById(id);
     }
 
     public ListOfObject<Book> getAllBooks(){
@@ -39,7 +34,8 @@ public class BookService {
 
     public void addBook(Book b){
         b.setLastUpdatedAt(new Date());
-        bookRepository.saveAndFlush(b);
+
+        bookRepository.save(b);
 
     }
 
@@ -54,25 +50,77 @@ public class BookService {
         bookRepository.saveAndFlush(b);
     }
 
+    public void updateAuthor(long id, Author author){
+        Optional<Author> a = authorRepository.findById(id);
+        if(a.isPresent()){
+            Author aut = a.get();
+            aut.setFirstName(author.getFirstName());
+            aut.setLastName(author.getLastName());
+        }
+
+    }
+
+    public void removeAuthorsBooks(long author_id){
+        Optional<Author> a = authorRepository.findById(author_id);
+        if(a.isPresent()){
+            Author aut = a.get();
+
+        }
+    }
+
 
     public void deleteAll() {
         bookRepository.deleteAll();
     }
 
+    public ListOfObject<Author> getAuthors(){
+        ListOfObject<Author> auts = new ListOfObject<>();
+        auts.setBookList(authorRepository.findAll());
+        return auts;
+    }
     public void addAuthor(Author author, long id) {
 
         //System.out.println(author);
 
         Book b = bookRepository.findById(id).get();
         if(b != null) {
-            author.addBook(b);
-            b.addAuthor(author);
+            //author.addBook(b);
+            //b.addAuthor(author);
             bookRepository.save(b);
-            authorRepository.save(author);
+            // authorRepository.save(author);
             System.out.println(b);
             System.out.println(author);
         }
 
 
+    }
+
+    public void updateBook(long id, Book book) {
+        book.setLastUpdatedAt(new Date());
+        bookRepository.saveAndFlush(book);
+    }
+
+    public void deleteAllAuthors() {
+        authorRepository.deleteAll();
+    }
+
+    public void updateAuthorName(long id, Author author) {
+        Author a = authorRepository.findById(id).get();
+        a.setFirstName(author.getFirstName());
+        a.setLastName(author.getLastName());
+        authorRepository.save(a);
+    }
+
+
+    public void deleteAuthor(long id) {
+       Author author = authorRepository.findById(id).get();
+       for(Book b : author.getBooks()){
+           b.removeAuthor(author);
+       }
+            authorRepository.deleteById(id);
+    }
+
+    public Optional<Author> getAuthorById(long author_id) {
+        return authorRepository.findById(author_id);
     }
 }

@@ -2,6 +2,7 @@ package daniella.iths.se.librarystorageservice.resources;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
@@ -17,8 +18,8 @@ public class Author {
     private String lastName;
 
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "authors")
-    @JsonBackReference
+    @ManyToMany(mappedBy = "authors", fetch = FetchType.LAZY)
+    @JsonIgnoreProperties("authors")
     private Set<Book> books;
 
 
@@ -67,5 +68,12 @@ public class Author {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
+
+//    @PreRemove
+//    private void removeBook(){
+//        for(Book b : books){
+//            b.removeAuthor(this);
+//        }
+//    }
 
 }
