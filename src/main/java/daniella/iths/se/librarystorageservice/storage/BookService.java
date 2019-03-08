@@ -96,8 +96,18 @@ public class BookService {
     }
 
     public void updateBook(long id, Book book) {
-        book.setLastUpdatedAt(new Date());
-        bookRepository.saveAndFlush(book);
+         bookRepository.findById(id).map(storedProduct -> {
+             if(book.getTitle() != null)
+            storedProduct.setTitle(book.getTitle());
+             if(book.getReturnDate() != null)
+            storedProduct.setReturnDate(book.getReturnDate());
+             if(book.isAvailable() || !book.isAvailable())
+            storedProduct.setAvailable(book.isAvailable());
+            book.setLastUpdatedAt(new Date());
+            return bookRepository.save(storedProduct);
+        });
+
+        //bookRepository.saveAndFlush(book);
     }
 
     public void deleteAllAuthors() {

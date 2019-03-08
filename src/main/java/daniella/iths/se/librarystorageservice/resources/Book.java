@@ -19,6 +19,8 @@ public class Book {
     private long id;
     private String title;
 
+    private boolean available = true;
+    private String returnDate;
     //@Temporal(TemporalType.TIMESTAMP)
     private final String postedAt = new Date().toString();
 
@@ -113,6 +115,22 @@ public class Book {
 //        this.authors = authors;
 //    }
 
+
+    public boolean isAvailable() {
+        return available;
+    }
+
+    public void setAvailable(boolean available) {
+        this.available = available;
+    }
+
+    public String getReturnDate() {
+        return returnDate;
+    }
+
+    public void setReturnDate(String returnDate) {
+        this.returnDate = returnDate;
+    }
 
     @Override
     public String toString() {

@@ -51,23 +51,31 @@ public class BookController {
 
     @PutMapping("update/{id}")
     public ResponseEntity<?> updateBookTitle(@PathVariable long id, @RequestBody Book book){
-        Optional<Book> b = bookService.getBookById(id);
-        if(b.isPresent()) {
-            Book bok = b.get();
-            bok.setLastUpdatedAt(new Date());
-            bok.setTitle(book.getTitle());
-            bookService.addBook(book);
-            return new ResponseEntity<>(bookService.getBookById(id).get(), HttpStatus.OK);
-        }
-        else
+      Optional<Book> b = bookService.getBookById(id);
+       if(b.isPresent()) {
+            bookService.updateBook(id, book);
+            return new ResponseEntity(b.get(), HttpStatus.OK);
+       }
+
+//            Book bok = b.get();
+//            bok.setLastUpdatedAt(new Date());
+//            bok.setTitle(book.getTitle());
+//            if(bok.getTitle() != null)
+//            bookService.addBook(book);
+//            if(bok.getReturnDate)
+        //else
+
             return new ResponseEntity("we no found no book :(", HttpStatus.NOT_FOUND);
 
     }
+
+
 
     @PutMapping("update/{id}/author/{author_id}")
     public ResponseEntity<?> updateAuthors(@PathVariable long id, @PathVariable long author_id, @RequestBody Author... authors){
         return new ResponseEntity("fix this shit later ok", HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS);
     }
+
 
     @DeleteMapping("/delete")
     public void deleteAll(){

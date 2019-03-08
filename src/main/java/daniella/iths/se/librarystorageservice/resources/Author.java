@@ -17,6 +17,8 @@ public class Author {
     private String firstName;
     private String lastName;
 
+//    private boolean available = true;
+//    private String returnDate;
 
     @ManyToMany(mappedBy = "authors", fetch = FetchType.LAZY)
     @JsonIgnoreProperties("authors")
@@ -27,6 +29,7 @@ public class Author {
     public Author(){
 
     }
+
 
     @Override
     public String toString() {
