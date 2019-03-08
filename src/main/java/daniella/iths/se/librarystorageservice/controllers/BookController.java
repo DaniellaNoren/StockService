@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Optional;
 
@@ -50,12 +51,32 @@ public class BookController {
     }
 
     @PutMapping("update/{id}")
-    public ResponseEntity<?> updateBookTitle(@PathVariable long id, @RequestBody Book book){
-      Optional<Book> b = bookService.getBookById(id);
-       if(b.isPresent()) {
+    public ResponseEntity<?> updateBookTitle(@PathVariable long id, @RequestBody Book book) {
+        Optional<Book> b = bookService.getBookById(id);
+        if (b.isPresent()) {
             bookService.updateBook(id, book);
             return new ResponseEntity(b.get(), HttpStatus.OK);
-       }
+        }
+        return new ResponseEntity("buk us nut fund", HttpStatus.NOT_FOUND);
+    }
+
+       @PutMapping("borrow/{id}/")
+       public ResponseEntity<?> updateAvailability(@PathVariable long id){
+          Optional<Book> book = bookService.getBookById(id);
+          if(book.isPresent()){
+              if(book.get().isAvailable()) {
+                  book.get().setAvailable(false);
+                  Calendar c = Calendar.getInstance();
+                  c.setTime(new Date());
+                  c.add(Calendar.DATE, 10);
+                  String date = c.get(Calendar.YEAR) + "-" + (c.get(Calendar.MONTH) + 1) + "-" + Calendar.DAY_OF_MONTH;
+
+                  book.get().setReturnDate(date);
+                  return new ResponseEntity(book.get(), HttpStatus.OK);
+              }else return new ResponseEntity("this book is already borrowed, silly billy", HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS);
+        }
+        return new ResponseEntity("nooooooooo book fouuuuuuuuuuund", HttpStatus.NOT_FOUND);
+
 
 //            Book bok = b.get();
 //            bok.setLastUpdatedAt(new Date());
@@ -65,7 +86,6 @@ public class BookController {
 //            if(bok.getReturnDate)
         //else
 
-            return new ResponseEntity("we no found no book :(", HttpStatus.NOT_FOUND);
 
     }
 
