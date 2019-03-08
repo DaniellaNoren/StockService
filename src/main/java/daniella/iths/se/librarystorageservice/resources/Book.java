@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -19,8 +20,10 @@ public class Book {
     private long id;
     private String title;
 
+    //@Value("true")
     private boolean available = true;
-    private String returnDate;
+    //@Value("none")
+    private String returnDate = "None";
     //@Temporal(TemporalType.TIMESTAMP)
     private final String postedAt = new Date().toString();
 
