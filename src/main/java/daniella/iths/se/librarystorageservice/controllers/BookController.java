@@ -25,7 +25,7 @@ public class BookController {
         this.authorRepository = authorRepository;
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<ListOfObject<Book>> getAllBooks() {
         ListOfObject<Book> listOfObject = new ListOfObject<>();
         List<Book> bookList = new ArrayList<>();
@@ -51,19 +51,18 @@ public class BookController {
             return ResponseEntity.notFound().build();
     }
 
+    @GetMapping("{id}/users")
+    public void getOneBooksUsers(@PathVariable long id){
+        Optional<Book> book = bookRepository.findById(id);
+        if(book.isPresent()){
+            //länka till user-service här med book.getUser_Id()
+        }
+    }
+
     @PostMapping
     public void addBook(@RequestBody Book book) {
         bookRepository.save(book);
     }
-
-//    @PutMapping("/update/{id}/author")
-//    public ResponseEntity<?> updateAuthorName(@RequestBody Author author, @PathVariable long id){
-//        if(bookService.getBookById(id).isPresent()) {
-//            bookService.updateAuthorName(id, author);
-//            return new ResponseEntity<Book>(bookService.getBookById(id).get(), HttpStatus.OK);
-//        }
-//        return new ResponseEntity<String>("where the book at???? not here", HttpStatus.NOT_FOUND);
-//    }
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateBookTitle(@PathVariable long id, @RequestBody Book book) {
@@ -83,6 +82,7 @@ public class BookController {
                             book1.getAuthors().add(author);
                     });
                 }
+
                 book1.setLastUpdatedAt(new Date());
                 return bookRepository.save(book1);
             });
@@ -91,61 +91,44 @@ public class BookController {
         return ResponseEntity.notFound().build();
     }
 
-//    @PutMapping("/{id}")
-//    public ResponseEntity<?> partiallyUpdateBook(@PathVariable long id, @RequestBody Book book){
-//        Optional<Book> b = bookService.getBookById(id);
-//        if(b.isPresent()){
-//            bookService.updateBookPartially(id, book);
-//            return new ResponseEntity(b.get(), HttpStatus.ACCEPTED);
-//        }
-//        return new ResponseEntity<String>("noooo", HttpStatus.NOT_FOUND);
-//    }
-
-    @PutMapping("borrow/{id}/")
-    public ResponseEntity<?> updateAvailability(@PathVariable long id) {
+    @PutMapping("/borrow/{id}")
+    public ResponseEntity<?> updateAvailability(@PathVariable long id, @RequestBody long user_id) {
         Optional<Book> book = bookRepository.findById(id);
         if (book.isPresent()) {
-            if (book.get().isAvailable()) {
-                book.get().setAvailable(false);
+            Book b = book.get();
+            if (b.isAvailable()) {
+                System.out.println("available");
+                b.setAvailable(false);
+                b.setUser_Id(user_id);
                 Calendar c = Calendar.getInstance();
                 c.setTime(new Date());
                 c.add(Calendar.DATE, 10);
                 String date = c.get(Calendar.YEAR) + "-" + (c.get(Calendar.MONTH) + 1) + "-" + Calendar.DAY_OF_MONTH;
-
-                book.get().setReturnDate(date);
-                return ResponseEntity.ok(book.get());
-            } else ResponseEntity.badRequest().build();
+                b.setReturnDate(date);
+                bookRepository.save(b);
+                return ResponseEntity.ok(b);
+            } else ResponseEntity.badRequest().body("Book is not available");
         }
         return ResponseEntity.notFound().build();
 
-
-//            Book bok = b.get();
-//            bok.setLastUpdatedAt(new Date());
-//            bok.setTitle(book.getTitle());
-//            if(bok.getTitle() != null)
-//            bookService.addBook(book);
-//            if(bok.getReturnDate)
-        //else
-
-
     }
 
-
-//    @PutMapping("/{id}/authors/{author_id}")
-//    public ResponseEntity<?> updateAuthors(@PathVariable long id, @PathVariable long author_id//, @RequestBody Author... authors
-//                                           ){
-//        Optional<Book> b = bookRepository.findById(id);
-//        if(b.isPresent()){
-//            Book book = b.get();
-//            Author a = authorRepository.findById(author_id).get();
-//            book.addAuthor(a);
-//            bookRepository.save(book);
-//            authorRepository.save(a);
-//            return new ResponseEntity(book, HttpStatus.OK);
-//        }
-//        else
-//            return new ResponseEntity(new BookNotFoundException("Book with that id not found"), HttpStatus.NOT_FOUND);
-//    }
+    @PutMapping("/return/{id}")
+    public ResponseEntity<?> returnBook(@PathVariable long id){
+        Optional<Book> b = bookRepository.findById(id);
+        if(b.isPresent()){
+            Book book = b.get();
+                if(!book.isAvailable()) {
+                    book.setAvailable(true);
+                    book.setUser_Id(0);
+                    book.setReturnDate("None");
+                    bookRepository.save(book);
+                    return ResponseEntity.ok(book);
+                }else
+                    return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.status(404).body("Book with that ID does not exist");
+    }
 
 
     @DeleteMapping("/delete")
@@ -163,31 +146,4 @@ public class BookController {
         return ResponseEntity.notFound().build();
     }
 }
-
-//
-//    @GetMapping("/authors")
-//    public ResponseEntity<ListOfObject<Author>> getAllAuthors(){
-//        return new ResponseEntity(bookService.getAuthors(), HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/authors/{id}")
-//    public ResponseEntity<?> getAuthorById(@PathVariable long id){
-//        Optional<Author> aut = bookService.getAuthorById(id);
-//        if(aut.isPresent()){
-//            return new ResponseEntity(aut.get(), HttpStatus.OK);
-//        }
-//        return new ResponseEntity("no author here bitch", HttpStatus.NOT_FOUND);
-//    }
-//
-//    @DeleteMapping("/authors/delete/{id}")
-//    public void deleteAuthor(@PathVariable long id){
-//        bookService.deleteAuthor(id);
-//    }
-
-
-//
-//    @DeleteMapping("/authors/delete")
-//    public void deleteAllAuthors(){
-//        bookService.deleteAllAuthors();
-//    }
 

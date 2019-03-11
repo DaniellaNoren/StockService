@@ -16,14 +16,12 @@ public class Book {
     private long id;
     private String title;
 
-    //@Value("true")
     private boolean available = true;
-    //@Value("none")
     private String returnDate = "None";
-    //@Temporal(TemporalType.TIMESTAMP)
     private final String postedAt = new Date().toString();
-
     private String lastUpdatedAt;
+
+    private long user_id;
 
     @JsonIgnoreProperties("books")
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
@@ -34,25 +32,9 @@ public class Book {
             )
     private Set<Author> authors;
 
-//    @Temporal(TemporalType.TIMESTAMP)
-//    @Column(name = "last_updated_at")
-//    private Date lastUpdatedAt = new Date();
-
-//    public Date getLastUpdatedAt() {
-//        return lastUpdatedAt;
-//    }
-//
-//    public void setLastUpdatedAt(Date lastUpdatedAt) {
-//        this.lastUpdatedAt = lastUpdatedAt;
-//    }
-
     public String getPostedAt(){
         return postedAt;
     }
-
-//    public void setPostedAt(){
-//        this.postedAt = new Date().toString();
-//    }
 
     public String getLastUpdatedAt(){
         return lastUpdatedAt;
@@ -60,11 +42,6 @@ public class Book {
     public void setLastUpdatedAt(Date date){
         this.lastUpdatedAt = date.toString();
     }
-
-
-
-    //    @ManyToMany
-//    private ListOfObject<Author> authors;
 
     public Book(){
 
@@ -95,27 +72,14 @@ public class Book {
 
 
     public void addAuthor (Author author) {
-        if(authors == null)
+        if (authors == null)
             authors = new HashSet<>();
         authors.add(author);
-//        author.getBooks().add(this);
     }
 
-//    public void removeAuthor(Author author){
-//        authors.remove(author);
-//        //author.getBooks().remove(this);
-//    }
-
-
-
-    //    public ListOfObject<Author> getAuthors() {
-//        return authors;
-//    }
-//
-//    public void setAuthors(ListOfObject<Author> authors) {
-//        this.authors = authors;
-//    }
-
+    public void removeAuthor(Author author) {
+        authors.remove(author);
+    }
 
     public boolean isAvailable() {
         return available;
@@ -133,6 +97,14 @@ public class Book {
         this.returnDate = returnDate;
     }
 
+    public long getUser_id(){
+        return user_id;
+    }
+
+    public void setUser_Id(long user_id){
+        this.user_id = user_id;
+    }
+
     @Override
     public String toString() {
         return "Book{" +
@@ -144,7 +116,4 @@ public class Book {
                 '}';
     }
 
-    public void removeAuthor(Author author) {
-        authors.remove(author);
-    }
 }
