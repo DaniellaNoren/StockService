@@ -1,14 +1,10 @@
 package daniella.iths.se.librarystorageservice.resources;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -99,6 +95,8 @@ public class Book {
 
 
     public void addAuthor (Author author) {
+        if(authors == null)
+            authors = new HashSet<>();
         authors.add(author);
 //        author.getBooks().add(this);
     }

@@ -10,7 +10,7 @@ public class ListOfObject<T> {
 
     }
 
-    public List<T> getBookList() {
+    public List<T> getList() {
         return listOfObjects;
     }
 

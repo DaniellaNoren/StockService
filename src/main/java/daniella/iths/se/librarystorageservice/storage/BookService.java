@@ -14,11 +14,15 @@ import java.util.Optional;
 @Service
 public class BookService {
 
+    private AuthorRepository authorRepository;
+
+    private BookRepository bookRepository;
 
     @Autowired
-    private AuthorRepository authorRepository;
-    @Autowired
-    private BookRepository bookRepository;
+    public BookService (AuthorRepository authorRepository, BookRepository bookRepository){
+        this.authorRepository = authorRepository;
+        this.bookRepository = bookRepository;
+    }
 
     public Optional<Book> getBookById(long id){
         return bookRepository.findById(id);
@@ -78,21 +82,26 @@ public class BookService {
         auts.setBookList(authorRepository.findAll());
         return auts;
     }
-    public void addAuthor(Author author, long id) {
-
-        //System.out.println(author);
-
-        Book b = bookRepository.findById(id).get();
-        if(b != null) {
-            //author.addBook(b);
-            //b.addAuthor(author);
-            bookRepository.save(b);
-            // authorRepository.save(author);
-            System.out.println(b);
-            System.out.println(author);
-        }
+    public void addAuthorToBook(long author_id, long id) {
+        Book book = bookRepository.findById(id).get();
+        Author a = authorRepository.findById(author_id).get();
+        book.addAuthor(a);
+        //a.addBook(book);
+        bookRepository.save(book);
+        authorRepository.save(a);
+        //bookRepository.findById(id).get().addAuthor(authorRepository.findById(author_id).get());
 
 
+//        //System.out.println(author);
+//       Optional<Book> b = bookRepository.findById(id);
+//        if(b.isPresent()) {
+//            if(!b.get().getAuthors().contains(author)) {
+//                b.get().addAuthor(author);
+//                bookRepository.save(b.get());
+//            }
+//            //bookRepository.save(b.get());
+//            // authorRepository.save(author);
+//        }
     }
 
     public void updateBook(long id, Book book) {
@@ -101,8 +110,8 @@ public class BookService {
             storedProduct.setTitle(book.getTitle());
              if(book.getReturnDate() != null)
             storedProduct.setReturnDate(book.getReturnDate());
-             if(book.isAvailable() || !book.isAvailable())
-            storedProduct.setAvailable(book.isAvailable());
+//             if(book.isAvailable())
+//            storedProduct.setAvailable(book.isAvailable());
             book.setLastUpdatedAt(new Date());
             return bookRepository.save(storedProduct);
         });
@@ -121,16 +130,32 @@ public class BookService {
         authorRepository.save(a);
     }
 
-
-    public void deleteAuthor(long id) {
-       Author author = authorRepository.findById(id).get();
-       for(Book b : author.getBooks()){
-           b.removeAuthor(author);
-       }
-            authorRepository.deleteById(id);
-    }
+//
+//    public void deleteAuthor(long id) {
+//       Author author = authorRepository.findById(id).get();
+//       for(Book b : author.getBooks()){
+//           b.removeAuthor(author);
+//       }
+//            authorRepository.deleteById(id);
+//    }
 
     public Optional<Author> getAuthorById(long author_id) {
         return authorRepository.findById(author_id);
+    }
+
+    public void updateBookPartially(long id, Book book) {
+
+        bookRepository.findById(id).map(storedProduct -> {
+//            //if(book.getTitle() != null)
+//                storedProduct.setTitle(book.getTitle());
+//            //if(book.getReturnDate() != null)
+//                storedProduct.setReturnDate(book.getReturnDate());
+//            //if(book.isAvailable() || !book.isAvailable())
+//                storedProduct.setAvailable(book.isAvailable());
+
+            storedProduct.setLastUpdatedAt(new Date());
+            return bookRepository.saveAndFlush(storedProduct);
+        });
+
     }
 }
