@@ -2,13 +2,17 @@ package daniella.iths.se.librarystorageservice.controllers;
 
 import daniella.iths.se.librarystorageservice.resources.Book;
 import daniella.iths.se.librarystorageservice.resources.ListOfObject;
+import daniella.iths.se.librarystorageservice.resources.User;
 import daniella.iths.se.librarystorageservice.storage.AuthorRepository;
 import daniella.iths.se.librarystorageservice.storage.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 @RestController
@@ -52,11 +56,20 @@ public class BookController {
     }
 
     @GetMapping("{id}/users")
-    public void getOneBooksUsers(@PathVariable long id){
+    public ResponseEntity<?> getOneBooksUsers(@PathVariable long id) throws URISyntaxException {
         Optional<Book> book = bookRepository.findById(id);
         if(book.isPresent()){
+            Book b = book.get();
+            if(b.getUser_id() > 0) {
+                RestTemplate rt = new RestTemplate();
+                User user = rt.getForEntity(new URI("http://localhost:8082/get-user/id/" + b.getUser_id()), User.class).getBody();
+                System.out.println(user.getUsername()+" "+user.getId());
+                return ResponseEntity.status(200).body(user);
+            }
+            return ResponseEntity.noContent().build();
             //länka till user-service här med book.getUser_Id()
         }
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping
@@ -97,7 +110,6 @@ public class BookController {
         if (book.isPresent()) {
             Book b = book.get();
             if (b.isAvailable()) {
-                System.out.println("available");
                 b.setAvailable(false);
                 b.setUser_Id(user_id);
                 Calendar c = Calendar.getInstance();
