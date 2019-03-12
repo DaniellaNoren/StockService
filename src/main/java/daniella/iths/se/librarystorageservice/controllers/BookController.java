@@ -63,11 +63,9 @@ public class BookController {
             if(b.getUser_id() > 0) {
                 RestTemplate rt = new RestTemplate();
                 User user = rt.getForEntity(new URI("http://localhost:8082/get-user/id/" + b.getUser_id()), User.class).getBody();
-                System.out.println(user.getUsername()+" "+user.getId());
                 return ResponseEntity.status(200).body(user);
             }
             return ResponseEntity.noContent().build();
-            //länka till user-service här med book.getUser_Id()
         }
         return ResponseEntity.notFound().build();
     }
