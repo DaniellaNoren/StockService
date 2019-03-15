@@ -24,6 +24,9 @@ public class BookController {
     private AuthorRepository authorRepository;
 
     @Autowired
+    RestTemplate restTemplate;
+
+    @Autowired
     public BookController(BookRepository bookRepository, AuthorRepository authorRepository) {
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
@@ -61,8 +64,7 @@ public class BookController {
         if(book.isPresent()){
             Book b = book.get();
             if(b.getUser_id() > 0) {
-                RestTemplate rt = new RestTemplate();
-                User user = rt.getForEntity(new URI("http://localhost:8082/get-user/id/" + b.getUser_id()), User.class).getBody();
+                User user = restTemplate.getForEntity(new URI("http://user-service/get-user/id/"+id), User.class).getBody();
                 return ResponseEntity.status(200).body(user);
             }
             return ResponseEntity.noContent().build();
@@ -116,8 +118,10 @@ public class BookController {
                 String date = c.get(Calendar.YEAR) + "-" + (c.get(Calendar.MONTH) + 1) + "-" + Calendar.DAY_OF_MONTH;
                 b.setReturnDate(date);
                 bookRepository.save(b);
+                System.out.println("inside ispresent");
                 return ResponseEntity.ok(b);
-            } else ResponseEntity.badRequest().body("Book is not available");
+
+            } else { return new ResponseEntity<String>("Book not available\"", HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS);}
         }
         return ResponseEntity.notFound().build();
 
