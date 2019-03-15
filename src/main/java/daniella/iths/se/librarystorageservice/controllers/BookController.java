@@ -118,10 +118,9 @@ public class BookController {
                 String date = c.get(Calendar.YEAR) + "-" + (c.get(Calendar.MONTH) + 1) + "-" + Calendar.DAY_OF_MONTH;
                 b.setReturnDate(date);
                 bookRepository.save(b);
-                System.out.println("inside ispresent");
                 return ResponseEntity.ok(b);
 
-            } else { return new ResponseEntity<String>("Book not available\"", HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS);}
+            } else { return new ResponseEntity<String>("Book not available", HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS);}
         }
         return ResponseEntity.notFound().build();
 
