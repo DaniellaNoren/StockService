@@ -120,7 +120,7 @@ public class BookController {
                 bookRepository.save(b);
                 return ResponseEntity.ok(b);
 
-            } else { return new ResponseEntity<String>("Book not available", HttpStatus.UNAVAILABLE_FOR_LEGAL_REASONS);}
+            } else { return new ResponseEntity<String>("Book not available", HttpStatus.NOT_FOUND);}
         }
         return ResponseEntity.notFound().build();
 
