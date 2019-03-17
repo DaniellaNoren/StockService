@@ -1,11 +1,13 @@
 package daniella.iths.se.librarystorageservice.controllers;
 
+import daniella.iths.se.librarystorageservice.resources.Author;
 import daniella.iths.se.librarystorageservice.resources.Book;
 import daniella.iths.se.librarystorageservice.resources.ListOfObject;
 import daniella.iths.se.librarystorageservice.resources.User;
 import daniella.iths.se.librarystorageservice.storage.AuthorRepository;
 import daniella.iths.se.librarystorageservice.storage.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -73,8 +75,24 @@ public class BookController {
     }
 
     @PostMapping
-    public void addBook(@RequestBody Book book) {
-        bookRepository.save(book);
+    public ResponseEntity<?> addBook(@RequestBody Book book) {
+        Book b = new Book();
+        if(book.getTitle() != null)
+            b.setTitle(book.getTitle());
+        if(book.getAuthors() != null) {
+            book.getAuthors().forEach(a -> {
+
+                if(authorRepository.findById(a.getAuthor_id()).isPresent()) {
+                    Author aut = authorRepository.findById(a.getAuthor_id()).get();
+                    b.addAuthor(aut);
+                    authorRepository.save(aut);
+                }else
+                    b.addAuthor(a);
+        });}else
+            b.setAuthors(new HashSet<Author>());
+        bookRepository.save(b);
+
+        return new ResponseEntity<Book>(b, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -96,7 +114,7 @@ public class BookController {
                     });
                 }
 
-                book1.setLastUpdatedAt(new Date());
+                book1.setLastUpdatedAt(new Date().toString());
                 return bookRepository.save(book1);
             });
             return ResponseEntity.ok(b.get());
@@ -110,6 +128,7 @@ public class BookController {
         if (book.isPresent()) {
             Book b = book.get();
             if (b.isAvailable()) {
+                System.out.println("Book id: "+b.getId());
                 b.setAvailable(false);
                 b.setUser_Id(user_id);
                 Calendar c = Calendar.getInstance();
@@ -118,11 +137,11 @@ public class BookController {
                 String date = c.get(Calendar.YEAR) + "-" + (c.get(Calendar.MONTH) + 1) + "-" + Calendar.DAY_OF_MONTH;
                 b.setReturnDate(date);
                 bookRepository.save(b);
-                return ResponseEntity.ok(b);
+                return new ResponseEntity(b, HttpStatus.OK);
 
             } else { return new ResponseEntity<String>("Book not available", HttpStatus.NOT_FOUND);}
         }
-        return ResponseEntity.notFound().build();
+        return new ResponseEntity("Book not found", HttpStatus.NOT_FOUND);
 
     }
 

@@ -1,5 +1,5 @@
 FROM openjdk:8-jre-alpine
 VOLUME /tmp
-ARG JAR_FILE
-COPY ${JAR_FILE} app.jar
+COPY ./target/library-storage-service-0.0.1-SNAPSHOT.jar app.jar
+EXPOSE 8081
 ENTRYPOINT ["java","-jar","/app.jar"]

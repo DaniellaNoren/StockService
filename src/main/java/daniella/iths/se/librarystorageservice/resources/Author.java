@@ -8,8 +8,8 @@ import java.util.Set;
 @Entity
 public class Author {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+   @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long author_id;
     private String firstName;
     private String lastName;
@@ -42,9 +42,15 @@ public class Author {
         return books;
     }
 
+    public void setBooks(Set<Book> books){
+        this.books = books;
+    }
+
     public void addBook(Book book) {
         books.add(book);
     }
+
+
     public long getAuthor_id() {
         return author_id;
     }

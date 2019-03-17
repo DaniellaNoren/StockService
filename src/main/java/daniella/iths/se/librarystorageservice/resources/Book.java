@@ -18,7 +18,7 @@ public class Book {
 
     private boolean available = true;
     private String returnDate = "None";
-    private final String postedAt = new Date().toString();
+    private final String postedAt;
     private String lastUpdatedAt;
 
     private long user_id;
@@ -39,14 +39,21 @@ public class Book {
     public String getLastUpdatedAt(){
         return lastUpdatedAt;
     }
-    public void setLastUpdatedAt(Date date){
-        this.lastUpdatedAt = date.toString();
+    public void setLastUpdatedAt(String lastUpdatedAt){
+        if(lastUpdatedAt == null)
+            lastUpdatedAt = new Date().toString();
+        else
+        this.lastUpdatedAt = lastUpdatedAt.toString();
     }
 
     public Book(){
+        postedAt = new Date().toString();
+        System.out.println(this.getPostedAt());
+        lastUpdatedAt = postedAt;
 
     }
     public Book(String title){
+        this();
         this.title = title;
     }
 
@@ -64,6 +71,10 @@ public class Book {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public void setAuthors(Set<Author> authors){
+        this.authors = authors;
     }
 
     public Set<Author> getAuthors() {
